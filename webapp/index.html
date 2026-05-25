@@ -419,6 +419,31 @@
       </div>
     </div>
 
+    <div class="form-group" style="margin-bottom:16px;">
+      <label>🎯 方案版本（选择合适的填报策略）</label>
+      <div class="version-grid" id="versionSelector">
+        <label class="version-card selected">
+          <input type="radio" name="planVersion" value="均衡版" checked>
+          <div class="vc-emoji">⚖️</div>
+          <div class="vc-title">均衡版</div>
+          <div class="vc-desc">稳定档最多（5个），落点最密，适合大多数考生</div>
+        </label>
+        <label class="version-card">
+          <input type="radio" name="planVersion" value="理科版">
+          <div class="vc-emoji">🔬</div>
+          <div class="vc-title">理科版</div>
+          <div class="vc-desc">理科/竞赛导向，指标生偏南科大附中，超常档5个</div>
+        </label>
+        <label class="version-card">
+          <input type="radio" name="planVersion" value="住宿版">
+          <div class="vc-emoji">🛏️</div>
+          <div class="vc-title">住宿版</div>
+          <div class="vc-desc">住宿口碑优先，红岭/龙城等硬件顶配学校</div>
+        </label>
+      </div>
+      <span class="hint">选一个最符合孩子情况的版本，后续支持个性化调整</span>
+    </div>
+
     <div class="form-group" style="margin-bottom:20px;">
       <label>🧠 孩子性格特点（可选，帮助个性化推荐）</label>
       <div class="check-group" id="personality">
@@ -478,6 +503,15 @@
 </footer>
 
 <script>
+// ── 版本选择卡片交互 ──
+document.getElementById('versionSelector').addEventListener('click', function(e) {
+  const card = e.target.closest('.version-card');
+  if (!card) return;
+  this.querySelectorAll('.version-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  card.querySelector('input').checked = true;
+});
+
 // ── 学校数据库（2026年，基于630分制估算，来源：梧桐论坛深户版历年分数，仅供参考）──
 const SCHOOLS = [
   {name:'深圳中学', tier:'A+', dist:'罗湖', score2026:593, score2025:574, commute2026:589, hasCommute:true, commuteDrop:-4, dataNote:'2025年实录', note:'全市顶尖，985/竞赛强校'},
@@ -648,6 +682,7 @@ function generatePlan() {
 
   // ── 生成志愿方案 ──
   const wantCommute = dormPref === '走读优先';
+  const planVersion = getRadioValue('planVersion') || '均衡版';
 
   // 按分数降序排列全部学校
   const allSorted = [...SCHOOLS].sort((a, b) => b.score2026 - a.score2026);
@@ -679,11 +714,59 @@ function generatePlan() {
     bottom = allSorted.filter(s => s.score2026 >= scoreRaw - 100 && s.score2026 < scoreRaw - 10);
   }
 
-  // 指标生候选
-  const indexCandidates = allSorted.filter(s => s.score2026 >= scoreRaw - 5 && s.score2026 <= scoreRaw + 10);
+  // ── 多版本方案定制 ──
+  // 固定不变：彩票位 → 深高级中心校区，锚点校 → 深高东校区，兜底按锚点分公式
+  // 仅当版本生效且分数在合理区间（~540-590）时做版本调校
+  const versionApplied = (planVersion !== '均衡版' && scoreRaw >= 540 && scoreRaw <= 590);
+
+  if (planVersion === '理科版' && scoreRaw >= 540 && scoreRaw <= 590) {
+    // 理科版：超常档换入理科/竞赛导向强校
+    const stemSchools = allSorted.filter(s =>
+      ['深圳科学高中','南方科技大学附属中学','龙城高级中学','北师大南山附属学校高中部','深圳大学附属中学（深大附中）'].includes(s.name)
+    );
+    // 替换超常档
+    superNormal = stemSchools.filter(s => s.score2026 >= scoreRaw + 3 && s.score2026 <= scoreRaw + 20);
+    // 指标生改南科大附中
+    if (superNormal.length < 3) {
+      // 如果不够，补充常规超常档
+      const extra = allSorted.filter(s => s.score2026 >= scoreRaw + 8 && s.score2026 < scoreRaw + 15 &&
+        !superNormal.find(x => x.name === s.name));
+      superNormal = [...superNormal, ...extra];
+    }
+    // 稳定档精减为3所（锚点/锚点-1/锚点-6左右）
+    stable = allSorted.filter(s => s.score2026 >= scoreRaw - 6 && s.score2026 <= scoreRaw + 2);
+  }
+
+  if (planVersion === '住宿版' && scoreRaw >= 540 && scoreRaw <= 590) {
+    // 住宿版：超常档换入住宿条件好的学校
+    const dormSchools = allSorted.filter(s =>
+      ['红岭中学','育才中学','龙城高级中学','人大附中深圳学校','翠园中学'].includes(s.name)
+    );
+    superNormal = dormSchools.filter(s => s.score2026 >= scoreRaw + 5 && s.score2026 <= scoreRaw + 18);
+    if (superNormal.length < 3) {
+      const extra = allSorted.filter(s => s.score2026 >= scoreRaw + 8 && s.score2026 < scoreRaw + 15 &&
+        !superNormal.find(x => x.name === s.name));
+      superNormal = [...superNormal, ...extra];
+    }
+  }
+
+  // 指标生候选（版本特定）
+  let indexCandidates;
+  if (planVersion === '理科版' && scoreRaw >= 540 && scoreRaw <= 585) {
+    // 理科版指标生优先南科大附中
+    indexCandidates = allSorted.filter(s =>
+      ['南方科技大学附属中学','翠园中学','深圳科学高中'].includes(s.name)
+    );
+  } else if (planVersion === '住宿版' && scoreRaw >= 540 && scoreRaw <= 585) {
+    indexCandidates = allSorted.filter(s =>
+      ['翠园中学','育才中学','红岭中学'].includes(s.name)
+    );
+  } else {
+    indexCandidates = allSorted.filter(s => s.score2026 >= scoreRaw - 5 && s.score2026 <= scoreRaw + 10);
+  }
 
   // 渲染指标生
-  document.getElementById('indexContent').innerHTML = renderIndexCard(indexCandidates, scoreRaw);
+  document.getElementById('indexContent').innerHTML = renderIndexCard(indexCandidates, scoreRaw, planVersion);
 
   // 渲染12志愿
   document.getElementById('planContent').innerHTML = renderPlanTable(
@@ -692,11 +775,14 @@ function generatePlan() {
     stable.slice(0,5),
     bottom.slice(0,2),
     wantCommute,
-    isBelowRange
+    isBelowRange,
+    planVersion,
+    versionApplied,
+    scoreRaw
   );
 
   // 渲染提示
-  document.getElementById('tipsContent').innerHTML = renderTips(scoreRaw, dormPref, personality, schoolName);
+  document.getElementById('tipsContent').innerHTML = renderTips(scoreRaw, dormPref, personality, schoolName, planVersion);
 
   // 滚动到结果
   setTimeout(() => {
@@ -704,7 +790,7 @@ function generatePlan() {
   }, 100);
 }
 
-function renderIndexCard(candidates, score) {
+function renderIndexCard(candidates, score, planVersion) {
   if (candidates.length === 0) {
     return `<p style="color:var(--text-secondary);font-size:14px;">根据当前分数，该分段附近暂无匹配的指标生候选，请向班主任确认本校具体指标名额分配情况。</p>`;
   }
@@ -727,7 +813,7 @@ function renderIndexCard(candidates, score) {
   return html;
 }
 
-function renderPlanTable(caipiao, superArr, stableArr, bottomArr, wantCommute, isBelowRange) {
+function renderPlanTable(caipiao, superArr, stableArr, bottomArr, wantCommute, isBelowRange, planVersion, versionApplied, scoreRaw) {
   const rows = [];
   let pos = 1;
 
@@ -745,13 +831,27 @@ function renderPlanTable(caipiao, superArr, stableArr, bottomArr, wantCommute, i
   const total = rows.length;
 
   // 低分段特别提示
+  // ── 版本标识 ──
+  const versionBadge = versionApplied ? `
+    <div style="background:linear-gradient(135deg,#e8f0fe,#f0fdf4);border:1.5px solid #bfdbfe;border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:14px;font-size:13px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:20px;">${
+        planVersion === '理科版' ? '🔬' :
+        planVersion === '住宿版' ? '🛏️' : '⚖️'
+      }</span>
+      <div>
+        <strong>${planVersion}方案已应用</strong>
+        ${planVersion === '理科版' ? '— 超常档优先理科/竞赛强校（北师附/龙城/南科大附），稳定档精减至3所，指标生建议南科大附中' :
+          planVersion === '住宿版' ? '— 超常档优先住宿口碑校（红岭/龙城等硬件顶配），保留人大附等高品质宿舍学校' : ''}
+      </div>
+    </div>` : '';
+
   const belowRangeAlert = isBelowRange ? `
     <div style="background:#fff8ec;border:1.5px solid #ffcc00;border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:14px;font-size:13px;color:#7d4700;">
       ⚠️ <strong>该分数段可报普通公办高中极少</strong>，本工具数据库中匹配学校数量有限，下方仅展示数据库中分数最接近的学校供参考。<br>
       建议：① 重点查阅《报考指导手册》中全部普通高中录取分数；② 了解民办高中/综合高中选项；③ 务必与班主任沟通，获取专业指导。
     </div>` : '';
 
-  let html = belowRangeAlert + `
+  let html = versionBadge + belowRangeAlert + `
     <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">
       下方为基于参考数据自动生成的方案，共 <strong>${total}</strong> 个志愿
       ${total < 12 ? `（<span style="color:var(--orange)">建议补满12个，可结合《报考指导手册》补充</span>）` : '（已接近12个，建议逐一核实分数线）'}
@@ -825,7 +925,7 @@ function renderPlanTable(caipiao, superArr, stableArr, bottomArr, wantCommute, i
   return html;
 }
 
-function renderTips(score, dorm, personality, school) {
+function renderTips(score, dorm, personality, school, planVersion) {
   const tips = [];
 
   // 通用红线
@@ -857,6 +957,14 @@ function renderTips(score, dorm, personality, school) {
   }
   if (personality.includes('文科强')) {
     tips.push({ level: 'blue', icon: '📖', text: '<strong>南外高中</strong>文科培养比高级中学更强，适合语言敏感、有出国意向或文科志向的学生' });
+  }
+
+  // 版本特定提示
+  if (planVersion === '理科版') {
+    tips.push({ level: 'blue', icon: '🔬', text: '<strong>理科版提醒：</strong>指标生建议<strong>南方科技大学附属中学</strong>（需向班主任确认本校→南科大附中名额数）；超常档优先理科/竞赛强校，稳定档精减至3所，与超常档之间可能有约8分空档，请家长知情接受' });
+  }
+  if (planVersion === '住宿版') {
+    tips.push({ level: 'blue', icon: '🛏️', text: '<strong>住宿版提醒：</strong>红岭中学住宿口碑全市最佳，龙城高级中学硬件最顶（恒温泳池+花园公寓）。人大附深圳住宿条件好但大鹏极偏远（家长探视成本高），请确认能接受' });
   }
 
   // 2026特别提醒
