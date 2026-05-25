@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>深圳中考志愿填报助手 2026</title>
+  <style>
+    /* ── 全局 Apple 风格 ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --blue: #0071e3;
+      --blue-light: #e8f0fe;
+      --green: #34c759;
+      --orange: #ff9f0a;
+      --red: #ff3b30;
+      --purple: #af52de;
+      --text: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --border: #d2d2d7;
+      --shadow: 0 4px 24px rgba(0,0,0,.08);
+      --radius: 18px;
+      --radius-sm: 10px;
+    }
+
+    body {
+      font-family: -apple-system, "SF Pro Display", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── 顶栏 ── */
+    header {
+      background: rgba(255,255,255,.85);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: linear-gradient(135deg, #0071e3, #30d158);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: #fff;
+    }
+    .logo-text { font-size: 17px; font-weight: 600; letter-spacing: -.3px; }
+    .badge {
+      font-size: 11px; font-weight: 600; padding: 3px 8px;
+      background: var(--blue); color: #fff; border-radius: 20px;
+    }
+
+    /* ── 主体 ── */
+    main { max-width: 960px; margin: 0 auto; padding: 32px 24px 60px; }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 48px 24px 40px;
+      background: linear-gradient(160deg, #e8f0fe 0%, #f0fdf4 100%);
+      border-radius: var(--radius);
+      margin-bottom: 32px;
+    }
+    .hero h1 {
+      font-size: clamp(26px, 5vw, 40px);
+      font-weight: 700;
+      letter-spacing: -.5px;
+      margin-bottom: 12px;
+    }
+    .hero p { font-size: 16px; color: var(--text-secondary); max-width: 520px; margin: 0 auto; }
+
+    /* ── 警告横幅 ── */
+    .warning-banner {
+      background: #fff8ec;
+      border: 1.5px solid #ffcc00;
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+    .warning-banner .icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .warning-banner p { font-size: 14px; color: #a05c00; line-height: 1.55; }
+    .warning-banner strong { color: #7d4700; }
+
+    /* ── 卡片 ── */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 19px; font-weight: 700;
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .card-title .step {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--blue); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; flex-shrink: 0;
+    }
+
+    /* ── 表单 ── */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 13px; font-weight: 600; color: var(--text-secondary); letter-spacing: .2px; }
+    .form-group .hint { font-size: 12px; color: var(--text-secondary); }
+
+    input[type="number"], input[type="text"], select, textarea {
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text);
+      background: #fafafa;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0,113,227,.15);
+      background: #fff;
+    }
+    textarea { resize: vertical; min-height: 70px; }
+
+    .radio-group, .check-group {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .radio-group label, .check-group label {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      font-size: 14px; cursor: pointer;
+      transition: all .18s;
+      color: var(--text);
+      font-weight: normal;
+    }
+    .radio-group input, .check-group input { display: none; }
+    .radio-group input:checked + span,
+    .check-group input:checked + span { color: var(--blue); font-weight: 600; }
+    .radio-group label:has(input:checked),
+    .check-group label:has(input:checked) {
+      border-color: var(--blue);
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
+    /* ── 提交按钮 ── */
+    .btn-primary {
+      width: 100%; padding: 15px;
+      background: var(--blue); color: #fff;
+      border: none; border-radius: var(--radius-sm);
+      font-size: 16px; font-weight: 600;
+      cursor: pointer; transition: opacity .18s, transform .1s;
+      letter-spacing: .2px;
+    }
+    .btn-primary:hover { opacity: .88; }
+    .btn-primary:active { transform: scale(.98); }
+
+    /* ── 结果区 ── */
+    #result { display: none; }
+    #result.visible { display: block; }
+
+    /* ── 分层卡片 ── */
+    .tier-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 12px;
+    }
+    .tier-badge {
+      font-size: 22px;
+    }
+    .tier-title { font-size: 16px; font-weight: 700; }
+    .tier-range { font-size: 13px; color: var(--text-secondary); }
+
+    .school-list { display: flex; flex-direction: column; gap: 8px; }
+    .school-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 14px;
+      background: #f5f5f7;
+      border-radius: var(--radius-sm);
+      gap: 8px;
+    }
+    .school-name { font-size: 14px; font-weight: 600; flex: 1; }
+    .school-tags { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+    .tag {
+      font-size: 11px; padding: 2px 8px;
+      border-radius: 20px; font-weight: 500;
+    }
+    .tag-blue { background: #dbeafe; color: #1d4ed8; }
+    .tag-green { background: #d1fae5; color: #065f46; }
+    .tag-orange { background: #ffedd5; color: #9a3412; }
+    .tag-red { background: #fee2e2; color: #991b1b; }
+    .tag-purple { background: #f3e8ff; color: #6b21a8; }
+    .tag-gray { background: #f1f5f9; color: #475569; }
+
+    /* ── 12志愿表格 ── */
+    .vol-table { width: 100%; border-collapse: collapse; margin-top: 4px; font-size: 14px; }
+    .vol-table th {
+      text-align: left; padding: 9px 12px;
+      background: #f5f5f7; color: var(--text-secondary);
+      font-weight: 600; font-size: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .vol-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+    .vol-table th:last-child { border-radius: 0 var(--radius-sm) 0 0; }
+    .vol-table td { padding: 10px 12px; border-bottom: 1px solid #f0f0f5; vertical-align: top; }
+    .vol-table tr:last-child td { border-bottom: none; }
+    .vol-table tr:hover td { background: #fafafe; }
+
+    .tier-dot {
+      width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: middle;
+    }
+    .dot-caipiao { background: var(--purple); }
+    .dot-super   { background: var(--blue); }
+    .dot-stable  { background: var(--green); }
+    .dot-bottom  { background: var(--orange); }
+
+    /* ── 注意事项 ── */
+    .tips-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+    .tip-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+    }
+    .tip-item.red   { background: #fff1f2; border-left: 3px solid var(--red); }
+    .tip-item.orange{ background: #fff8ec; border-left: 3px solid var(--orange); }
+    .tip-item.blue  { background: #eff6ff; border-left: 3px solid var(--blue); }
+    .tip-item.green { background: #f0fdf4; border-left: 3px solid var(--green); }
+    .tip-item .tip-icon { font-size: 18px; flex-shrink: 0; }
+    .tip-item p { font-size: 14px; line-height: 1.6; }
+    .tip-item strong { color: var(--text); }
+
+    /* ── 指标生分析 ── */
+    .index-box {
+      background: linear-gradient(135deg, #f0fdf4, #eff6ff);
+      border: 1.5px solid #bfdbfe;
+      border-radius: var(--radius-sm);
+      padding: 16px 18px;
+    }
+    .index-box h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .index-box p  { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+    .index-box ul { margin: 8px 0 0 18px; font-size: 14px; color: var(--text-secondary); }
+    .index-box li { margin-bottom: 4px; }
+
+    /* ── 框架说明 ── */
+    .framework-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .framework-item {
+      padding: 16px;
+      border-radius: var(--radius-sm);
+      text-align: center;
+    }
+    .framework-item .fi-emoji { font-size: 28px; margin-bottom: 6px; }
+    .framework-item .fi-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .framework-item .fi-desc  { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+    .fi-caipiao { background: #f9f0ff; }
+    .fi-super   { background: #eff6ff; }
+    .fi-stable  { background: #f0fdf4; }
+    .fi-bottom  { background: #fff8ec; }
+
+    /* ── 学校详情弹出 ── */
+    .school-detail-btn {
+      font-size: 12px; color: var(--blue);
+      cursor: pointer; text-decoration: underline;
+      background: none; border: none; padding: 0;
+    }
+
+    /* ── 免责 footer ── */
+    footer {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 12px;
+      padding: 24px;
+      line-height: 1.7;
+    }
+
+    /* ── 分隔线 ── */
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+    /* ── 进度指示 ── */
+    .score-display {
+      font-size: 48px; font-weight: 700;
+      color: var(--blue); text-align: center;
+      margin: 8px 0;
+    }
+    .score-display .unit { font-size: 20px; font-weight: 400; color: var(--text-secondary); }
+
+    /* ── 动画 ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .anim { animation: fadeUp .35s ease both; }
+    .anim-d1 { animation-delay: .05s; }
+    .anim-d2 { animation-delay: .10s; }
+    .anim-d3 { animation-delay: .15s; }
+    .anim-d4 { animation-delay: .20s; }
+  </style>
+</head>
+<body>
+
+<!-- 顶栏 -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🏫</div>
+      <span class="logo-text">深圳中考志愿助手</span>
+    </div>
+    <span class="badge">2026年版</span>
+  </div>
+</header>
+
+<main>
+  <!-- Hero -->
+  <div class="hero">
+    <h1>志愿填报，一步一步来 📋</h1>
+    <p>输入孩子的基本信息，帮您快速梳理分层策略，让12个志愿都物尽其用</p>
+  </div>
+
+  <!-- 全局警告 -->
+  <div class="warning-banner">
+    <div class="icon">⚠️</div>
+    <p><strong>重要提示：</strong>本工具基于2026年政策规则和历年参考数据，具体录取分数线以当年《考生报考指导手册》为准。<strong>录取后一律不退档、不转校</strong>，所有志愿须在截止前慎重填写。</p>
+  </div>
+
+  <!-- 填报框架说明（始终展示） -->
+  <div class="card">
+    <div class="card-title">📖 12个志愿怎么分配？</div>
+    <div class="framework-grid">
+      <div class="framework-item fi-caipiao">
+        <div class="fi-emoji">🎰</div>
+        <div class="fi-title">彩票冲刺 · 1个</div>
+        <div class="fi-desc">比预估分高15分以上<br>极低概率，但留一个梦想位</div>
+      </div>
+      <div class="framework-item fi-super">
+        <div class="fi-emoji">🚀</div>
+        <div class="fi-title">超常发挥 · 3-4个</div>
+        <div class="fi-desc">高出预估8-12分<br>发挥超常或题目偏简单时能到</div>
+      </div>
+      <div class="framework-item fi-stable">
+        <div class="fi-emoji">🎯</div>
+        <div class="fi-title">稳定目标 · 4-5个 ⭐</div>
+        <div class="fi-desc">正常发挥可以到的学校<br>最重要，重点布局这一档</div>
+      </div>
+      <div class="framework-item fi-bottom">
+        <div class="fi-emoji">🛡️</div>
+        <div class="fi-title">兜底保底 · 2个</div>
+        <div class="fi-desc">防止滑档，认真选<br>必须是真正愿意去的学校</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 输入表单 -->
+  <div class="card">
+    <div class="card-title">
+      <div class="step">1</div>
+      输入孩子基本信息
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>📊 预估分数（2026年满分630分）</label>
+        <input type="number" id="score" min="400" max="630" placeholder="例如：565"
+               oninput="onScoreInput(this.value)">
+        <span class="hint">可以填模拟考最近2-3次的平均分</span>
+      </div>
+      <div class="form-group">
+        <label>🏫 就读初中全称</label>
+        <input type="text" id="school" placeholder="例如：深圳高级中学北校区">
+        <span class="hint">影响指标生名额分配</span>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:16px;">
+      <label>🛏️ 住宿 / 走读偏好</label>
+      <div class="radio-group" id="dormPref">
+        <label><input type="radio" name="dorm" value="住宿优先"><span>住宿优先</span></label>
+        <label><input type="radio" name="dorm" value="走读优先"><span>走读优先</span></label>
+        <label><input type="radio" name="dorm" value="均可"><span>均可接受</span></label>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:16px;">
+      <label>📍 区域偏好（可多选）</label>
+      <div class="check-group" id="districtPref">
+        <label><input type="checkbox" value="南山"><span>南山</span></label>
+        <label><input type="checkbox" value="福田"><span>福田</span></label>
+        <label><input type="checkbox" value="龙华"><span>龙华</span></label>
+        <label><input type="checkbox" value="宝安"><span>宝安</span></label>
+        <label><input type="checkbox" value="罗湖"><span>罗湖</span></label>
+        <label><input type="checkbox" value="龙岗"><span>龙岗</span></label>
+        <label><input type="checkbox" value="不限"><span>不限</span></label>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:20px;">
+      <label>🧠 孩子性格特点（可选，帮助个性化推荐）</label>
+      <div class="check-group" id="personality">
+        <label><input type="checkbox" value="自律强"><span>自律性强</span></label>
+        <label><input type="checkbox" value="理科强"><span>理科见长</span></label>
+        <label><input type="checkbox" value="文科强"><span>文科见长</span></label>
+        <label><input type="checkbox" value="喜欢竞争"><span>喜欢竞争</span></label>
+        <label><input type="checkbox" value="需要生活质量"><span>重视生活品质</span></label>
+        <label><input type="checkbox" value="综合发展"><span>综合全面发展</span></label>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="generatePlan()">🎯 生成志愿填报方案</button>
+  </div>
+
+  <!-- 结果区 -->
+  <div id="result">
+    <!-- 基本分析 -->
+    <div class="card anim anim-d1" id="scoreAnalysis">
+      <div class="card-title">
+        <div class="step">2</div>
+        分数分析
+      </div>
+      <div class="score-display">
+        <span id="displayScore">--</span><span class="unit"> 分</span>
+      </div>
+      <div id="scoreDesc" style="text-align:center; color:var(--text-secondary); font-size:14px; margin-bottom:16px;"></div>
+      <div class="divider"></div>
+      <div id="indexAnalysis" class="index-box"></div>
+    </div>
+
+    <!-- 指标生建议 -->
+    <div class="card anim anim-d2" id="indexCard">
+      <div class="card-title">🏷️ 名额分配志愿（指标生）</div>
+      <div id="indexContent"></div>
+    </div>
+
+    <!-- 12志愿推荐 -->
+    <div class="card anim anim-d3" id="planCard">
+      <div class="card-title">📋 统一招生第一批 · 12个志愿布局</div>
+      <div id="planContent"></div>
+    </div>
+
+    <!-- 个性化提示 -->
+    <div class="card anim anim-d4" id="tipsCard">
+      <div class="card-title">⚠️ 关键注意事项</div>
+      <div id="tipsContent"></div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  本工具基于公开政策信息和历年参考数据，仅供参考。<br>
+  具体录取分数以当年《深圳市高中阶段学校招生考生报考指导手册》为准。<br>
+  建议结合班主任获取的本校指标生历年录取情况综合判断。
+</footer>
+
+<script>
+// ── 学校数据库（2026年，基于630分制估算，来源：梧桐论坛深户版历年分数，仅供参考）──
+const SCHOOLS = [
+  {name:'深圳中学', tier:'A+', dist:'罗湖', score2026:593, score2025:574, commute2026:589, hasCommute:true, commuteDrop:-4, dataNote:'2025年实录', note:'全市顶尖，985/竞赛强校'},
+  {name:'深圳实验学校（高中部）', tier:'A+', dist:'南山', score2026:589, score2025:570, commute2026:588, hasCommute:true, commuteDrop:-1, dataNote:'2025年实录', note:'全市前2，学术氛围顶尖'},
+  {name:'深圳市高级中学中心校区', tier:'A+', dist:'福田', score2026:588, score2025:569, commute2026:587, hasCommute:true, commuteDrop:-1, dataNote:'2025年实录', note:'全市前3，综合名校'},
+  {name:'深圳外国语学校', tier:'A+', dist:'盐田', score2026:587, score2025:568, commute2026:585, hasCommute:true, commuteDrop:-2, dataNote:'2025年实录', note:'外语特色，985升学强'},
+  {name:'红岭中学', tier:'A', dist:'福田', score2026:584, score2025:565, commute2026:582, hasCommute:true, commuteDrop:-1, dataNote:'2025年实录', note:'老牌名校，住宿条件好，校园活动丰富'},
+  {name:'育才中学', tier:'A', dist:'南山', score2026:582, score2025:564, commute2026:581, hasCommute:true, commuteDrop:-1, dataNote:'2025年实录', note:'住宿好，环境优，综合发展'},
+  {name:'宝安中学（集团）高中部', tier:'A', dist:'宝安', score2026:582, score2025:564, commute2026:580, hasCommute:true, commuteDrop:-2, dataNote:'2025年实录', note:'宝安区旗舰，区内指标多，外区体验一般'},
+  {name:'深圳大学附属中学（深大附中）', tier:'A', dist:'南山', score2026:580, score2025:562, commute2026:578, hasCommute:true, commuteDrop:-2, dataNote:'2025年实录', note:'依托深大，综合均衡'},
+  {name:'北师大南山附属学校高中部', tier:'A', dist:'南山', score2026:580, score2025:562, commute2026:578, hasCommute:true, commuteDrop:-2, dataNote:'2025年实录', note:'均衡口碑好'},
+  {name:'深圳科学高中', tier:'A', dist:'龙岗', score2026:578, score2025:560, commute2026:576, hasCommute:true, commuteDrop:-2, dataNote:'2025年实录', note:'衡水模式，高压刷题，适合自律理科生'},
+  {name:'深圳市南山外国语学校（集团）高级中学', tier:'A', dist:'南山', score2026:577, score2025:559, commute2026:576, hasCommute:true, commuteDrop:-1, dataNote:'2025年实录', note:'文科强，适合语言/出国方向'},
+  {name:'深圳市第二高级中学', tier:'A', dist:'南山', score2026:575, score2025:557, commute2026:573, hasCommute:true, commuteDrop:-2, dataNote:'2025年实录', note:'综合均衡'},
+  {name:'翠园中学', tier:'A', dist:'罗湖', score2026:575, score2025:557, commute2026:573, hasCommute:true, commuteDrop:-2, dataNote:'2025年实录', note:'老牌名校，2026年扩招分数线可能下移'},
+  {name:'龙城高级中学', tier:'A', dist:'龙岗', score2026:575, score2025:557, commute2026:572, hasCommute:true, commuteDrop:-3, dataNote:'2025年实录', note:'龙岗区标杆，综合优质'},
+  {name:'南方科技大学附属中学', tier:'A', dist:'宝安', score2026:574, score2025:556, commute2026:570, hasCommute:true, commuteDrop:-4, dataNote:'2025年实录', note:'依托南科大，创新理工氛围'},
+  {name:'龙华高级中学', tier:'A', dist:'龙华', score2026:571, score2025:553, commute2026:569, hasCommute:true, commuteDrop:-2, dataNote:'2025年实录', note:'龙华尖子班强'},
+  {name:'人大附中深圳学校', tier:'A', dist:'大鹏', score2026:571, score2025:553, commute2026:559, hasCommute:true, commuteDrop:-12, dataNote:'2025年实录', note:'综合均衡，口碑好，大鹏区（距市区较远）'},
+  {name:'深圳市第二实验学校', tier:'A', dist:'罗湖', score2026:568, score2025:550, commute2026:565, hasCommute:true, commuteDrop:-3, dataNote:'2025年实录', note:''},
+  {name:'深圳实验学校光明高中部', tier:'A', dist:'光明', score2026:567, score2025:549, commute2026:560, hasCommute:true, commuteDrop:-7, dataNote:'2025年实录', note:''},
+  {name:'深圳外国语学校龙华高中部', tier:'A', dist:'龙华', score2026:567, score2025:549, commute2026:561, hasCommute:true, commuteDrop:-6, dataNote:'2025年实录', note:''},
+  {name:'广东实验中学深圳学校', tier:'A', dist:'龙岗', score2026:567, score2025:549, commute2026:558, hasCommute:true, commuteDrop:-9, dataNote:'2025年实录', note:''},
+  {name:'育才中学蛇口校区', tier:'A', dist:'南山', score2026:567, score2025:549, commute2026:564, hasCommute:true, commuteDrop:-3, dataNote:'2025年实录', note:'育才集团新校区，住宿好，独立代码'},
+  {name:'深圳市高级中学东校区', tier:'A', dist:'坪山', score2026:566, score2025:548, commute2026:556, hasCommute:true, commuteDrop:-10, dataNote:'2025年实录', note:'深高集团，毕业证与中心校区同；2026走读约70名额，降分约10分'},
+  {name:'新安中学（集团）高中部', tier:'A', dist:'宝安', score2026:565, score2025:547, commute2026:562, hasCommute:true, commuteDrop:-3, dataNote:'2025年实录', note:'宝安优质，综合不错'},
+  {name:'深圳大学附属实验中学', tier:'A', dist:'光明', score2026:564, score2025:546, commute2026:558, hasCommute:true, commuteDrop:-6, dataNote:'2025年实录', note:''},
+  {name:'深圳科学高中龙岗分校', tier:'A', dist:'龙岗', score2026:563, score2025:545, commute2026:556, hasCommute:true, commuteDrop:-7, dataNote:'2025年实录', note:''},
+  {name:'华中师范大学龙岗附属中学', tier:'A', dist:'龙岗', score2026:563, score2025:545, commute2026:558, hasCommute:true, commuteDrop:-5, dataNote:'2025年实录', note:''},
+  {name:'深圳北理莫斯科大学附属实验中学', tier:'A', dist:'龙岗', score2026:562, score2025:544, commute2026:553, hasCommute:true, commuteDrop:-9, dataNote:'2025年实录', note:''},
+  {name:'中国科学院深圳理工大学附属实验高级中学', tier:'A', dist:'光明', score2026:560, score2025:542, commute2026:555, hasCommute:true, commuteDrop:-5, dataNote:'2025年实录', note:''},
+  {name:'南头中学', tier:'A', dist:'南山', score2026:559, score2025:541, commute2026:557, hasCommute:true, commuteDrop:-2, dataNote:'2025年实录', note:''},
+  {name:'东北师范大学附属中学深圳学校', tier:'A', dist:'坪山', score2026:558, score2025:540, commute2026:547, hasCommute:true, commuteDrop:-10, dataNote:'2025年实录', note:''},
+  {name:'盐田高级中学', tier:'A', dist:'盐田', score2026:557, score2025:539, commute2026:542, hasCommute:true, commuteDrop:-14, dataNote:'2025年实录', note:'小班化，住宿好'},
+  {name:'深圳市红山中学', tier:'A', dist:'龙华', score2026:555, score2025:537, commute2026:548, hasCommute:true, commuteDrop:-6, dataNote:'2025年实录', note:''},
+  {name:'深圳市格致中学', tier:'A', dist:'龙华', score2026:555, score2025:537, commute2026:546, hasCommute:true, commuteDrop:-8, dataNote:'2025年实录', note:''},
+  {name:'南山实验集团华侨城中学', tier:'A', dist:'南山', score2026:554, score2025:536, commute2026:550, hasCommute:true, commuteDrop:-3, dataNote:'2025年实录', note:''},
+  {name:'深圳市龙岗区实验高级中学', tier:'A', dist:'龙岗', score2026:554, score2025:536, commute2026:541, hasCommute:true, commuteDrop:-12, dataNote:'2025年实录', note:''},
+  {name:'香港中文大学（深圳）附属明德高级中学', tier:'A', dist:'福田', score2026:554, score2025:536, commute2026:550, hasCommute:true, commuteDrop:-3, dataNote:'2025年实录', note:''},
+  {name:'深圳市高级中学创新高中', tier:'B+', dist:'龙岗', score2026:549, score2025:532, commute2026:536, hasCommute:true, commuteDrop:-13, dataNote:'2025年实录', note:''},
+  {name:'罗湖外语学校', tier:'B+', dist:'罗湖', score2026:549, score2025:532, commute2026:536, hasCommute:true, commuteDrop:-13, dataNote:'2025年实录', note:''},
+  {name:'松岗中学', tier:'B+', dist:'宝安', score2026:549, score2025:532, commute2026:544, hasCommute:true, commuteDrop:-5, dataNote:'2025年实录', note:''},
+  {name:'福田中学', tier:'B+', dist:'福田', score2026:549, score2025:532, commute2026:542, hasCommute:true, commuteDrop:-7, dataNote:'2025年实录', note:''},
+  {name:'宝安第一外国语学校', tier:'B+', dist:'宝安', score2026:548, score2025:531, commute2026:538, hasCommute:true, commuteDrop:-10, dataNote:'2025年实录', note:''},
+  {name:'深圳技术大学附属中学', tier:'B+', dist:'坪山', score2026:548, score2025:531, commute2026:536, hasCommute:true, commuteDrop:-12, dataNote:'2025年实录', note:''},
+  {name:'深圳第二外国语学校', tier:'B+', dist:'龙华', score2026:547, score2025:530, commute2026:538, hasCommute:true, commuteDrop:-9, dataNote:'2025年实录', note:''},
+  {name:'龙津中学', tier:'B+', dist:'宝安', score2026:545, score2025:528, commute2026:521, hasCommute:true, commuteDrop:-24, dataNote:'2025年实录', note:''},
+  {name:'西浦基础教育集团外国语高级中学（原福外高）', tier:'B+', dist:'福田', score2026:541, score2025:524, commute2026:536, hasCommute:true, commuteDrop:-5, dataNote:'2025年实录', note:''},
+  {name:'深圳市第三高级中学（国内高考班）', tier:'B+', dist:'龙岗', score2026:541, score2025:524, commute2026:531, hasCommute:true, commuteDrop:-10, dataNote:'2025年实录', note:''},
+  {name:'深圳市高级中学理慧高中', tier:'B+', dist:'龙岗', score2026:541, score2025:524, commute2026:512, hasCommute:true, commuteDrop:-28, dataNote:'2025年实录', note:''},
+  {name:'罗湖高级中学', tier:'B+', dist:'罗湖', score2026:540, score2025:523, commute2026:535, hasCommute:true, commuteDrop:-5, dataNote:'2025年实录', note:''},
+  {name:'深圳市燕川中学', tier:'B+', dist:'宝安', score2026:538, score2025:521, commute2026:503, hasCommute:true, commuteDrop:-34, dataNote:'2025年实录', note:''},
+  {name:'深圳市红岭教育集团大鹏华侨中学', tier:'B+', dist:'大鹏', score2026:538, score2025:521, commute2026:517, hasCommute:true, commuteDrop:-20, dataNote:'2025年实录', note:''},
+  {name:'平冈中学', tier:'B+', dist:'龙岗', score2026:536, score2025:519, commute2026:526, hasCommute:true, commuteDrop:-10, dataNote:'2025年实录', note:''},
+  {name:'深圳市高级中学有为高中', tier:'B+', dist:'龙岗', score2026:534, score2025:517, commute2026:507, hasCommute:true, commuteDrop:-26, dataNote:'2025年实录', note:''},
+  {name:'深圳外国语学校弘知高中', tier:'B+', dist:'光明', score2026:531, score2025:514, commute2026:519, hasCommute:true, commuteDrop:-11, dataNote:'2025年实录', note:''},
+  {name:'西乡中学', tier:'B+', dist:'宝安', score2026:530, score2025:513, commute2026:523, hasCommute:true, commuteDrop:-7, dataNote:'2025年实录', note:''},
+  {name:'深圳市高级中学文博高中', tier:'B+', dist:'龙岗', score2026:529, score2025:512, commute2026:498, hasCommute:true, commuteDrop:-30, dataNote:'2025年实录', note:''},
+  {name:'深圳实验学校明理高中', tier:'B+', dist:'坪山', score2026:528, score2025:511, commute2026:492, hasCommute:true, commuteDrop:-35, dataNote:'2025年实录', note:''},
+  {name:'深圳实验学校崇文高中', tier:'B+', dist:'坪山', score2026:528, score2025:511, commute2026:496, hasCommute:true, commuteDrop:-31, dataNote:'2025年实录', note:''},
+  {name:'光明区高级中学', tier:'B+', dist:'光明', score2026:525, score2025:508, commute2026:511, hasCommute:true, commuteDrop:-13, dataNote:'2025年实录', note:''},
+  {name:'深圳市龙华外国语高级中学', tier:'B+', dist:'龙华', score2026:524, score2025:507, commute2026:517, hasCommute:true, commuteDrop:-6, dataNote:'2025年实录', note:''},
+  {name:'深圳市福海中学', tier:'B+', dist:'宝安', score2026:524, score2025:507, commute2026:498, hasCommute:true, commuteDrop:-25, dataNote:'2025年实录', note:''},
+  {name:'深圳市第七高级中学', tier:'B+', dist:'宝安', score2026:521, score2025:504, commute2026:504, hasCommute:true, commuteDrop:-16, dataNote:'2025年实录', note:''},
+  {name:'深圳市第一职业技术学校（综合高中）', tier:'B+', dist:'福田', score2026:519, score2025:503, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2025年实录', note:''},
+  {name:'深圳实验学校卓越高中', tier:'B+', dist:'坪山', score2026:519, score2025:503, commute2026:490, hasCommute:true, commuteDrop:-29, dataNote:'2025年实录', note:''},
+  {name:'深圳市致理中学', tier:'B+', dist:'龙华', score2026:517, score2025:501, commute2026:500, hasCommute:true, commuteDrop:-17, dataNote:'2025年实录', note:''},
+  {name:'深圳实验学校至臻高中', tier:'B+', dist:'坪山', score2026:517, score2025:501, commute2026:499, hasCommute:true, commuteDrop:-18, dataNote:'2025年实录', note:''},
+  {name:'深圳外国语学校博雅高中', tier:'B+', dist:'光明', score2026:517, score2025:501, commute2026:495, hasCommute:true, commuteDrop:-22, dataNote:'2025年实录', note:''},
+  {name:'北京大学附属中学深圳学校', tier:'B+', dist:'福田', score2026:511, score2025:495, commute2026:507, hasCommute:true, commuteDrop:-4, dataNote:'2025年实录', note:''},
+  {name:'观澜中学', tier:'B+', dist:'龙华', score2026:511, score2025:495, commute2026:501, hasCommute:true, commuteDrop:-10, dataNote:'2025年实录', note:''},
+  {name:'深圳外国语学校致远高中', tier:'B+', dist:'光明', score2026:511, score2025:495, commute2026:493, hasCommute:true, commuteDrop:-18, dataNote:'2025年实录', note:''},
+  {name:'坪山高级中学', tier:'B+', dist:'坪山', score2026:508, score2025:492, commute2026:482, hasCommute:true, commuteDrop:-25, dataNote:'2025年实录', note:''},
+  {name:'深圳市盐港中学（综合高中）', tier:'B+', dist:'盐田', score2026:508, score2025:492, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2025年实录', note:''},
+  {name:'深圳市行知职业技术学校（综合高中）', tier:'B+', dist:'罗湖', score2026:507, score2025:491, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2025年实录', note:''},
+  {name:'深圳外国语学校理工高中', tier:'B+', dist:'光明', score2026:505, score2025:489, commute2026:491, hasCommute:true, commuteDrop:-14, dataNote:'2025年实录', note:''},
+  {name:'深圳市龙华科技实验高级中学', tier:'B+', dist:'龙华', score2026:505, score2025:489, commute2026:487, hasCommute:true, commuteDrop:-17, dataNote:'2025年实录', note:''},
+  {name:'深圳市聚龙科学中学', tier:'B', dist:'坪山', score2026:501, score2025:485, commute2026:476, hasCommute:true, commuteDrop:-24, dataNote:'2025年实录', note:''},
+  {name:'宝安中学（集团）石岩外国语学校', tier:'B', dist:'宝安', score2026:498, score2025:482, commute2026:480, hasCommute:true, commuteDrop:-17, dataNote:'2025年实录', note:''},
+  {name:'光明中学', tier:'B', dist:'光明', score2026:496, score2025:480, commute2026:489, hasCommute:true, commuteDrop:-7, dataNote:'2025年实录', note:''},
+  {name:'横岗高级中学', tier:'B', dist:'龙岗', score2026:496, score2025:480, commute2026:490, hasCommute:true, commuteDrop:-6, dataNote:'2025年实录', note:''},
+  {name:'龙华中学', tier:'B', dist:'龙华', score2026:491, score2025:475, commute2026:477, hasCommute:true, commuteDrop:-13, dataNote:'2025年实录', note:''},
+  {name:'深圳市第二实验学校明远高中', tier:'B', dist:'大鹏', score2026:490, score2025:474, commute2026:472, hasCommute:true, commuteDrop:-17, dataNote:'2025年实录', note:''},
+  {name:'龙岗二高（布吉高级中学）', tier:'B', dist:'龙岗', score2026:490, score2025:474, commute2026:485, hasCommute:true, commuteDrop:-4, dataNote:'2025年实录', note:''},
+  {name:'平湖外国语学校', tier:'B', dist:'龙岗', score2026:486, score2025:471, commute2026:479, hasCommute:true, commuteDrop:-7, dataNote:'2025年实录', note:''},
+  {name:'深中科技高中', tier:'B', dist:'深汕', score2026:485, score2025:470, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2025年实录', note:''},
+  {name:'沙井中学', tier:'B', dist:'宝安', score2026:484, score2025:469, commute2026:480, hasCommute:true, commuteDrop:-4, dataNote:'2025年实录', note:''},
+  {name:'深圳中学数理高中', tier:'B', dist:'深汕', score2026:483, score2025:468, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2025年实录', note:''},
+  {name:'深中实验高中', tier:'B', dist:'深汕', score2026:483, score2025:468, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2025年实录', note:''},
+  {name:'深圳市第二高级中学深汕实验学校', tier:'B', dist:'深汕', score2026:481, score2025:466, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2025年实录', note:''},
+  {name:'深圳市艺术高中', tier:'B', dist:'龙华', score2026:479, score2025:464, commute2026:475, hasCommute:true, commuteDrop:-4, dataNote:'2025年实录', note:''},
+  {name:'布吉中学', tier:'B', dist:'龙岗', score2026:477, score2025:462, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2025年实录', note:''},
+  {name:'深圳市美术学校', tier:'B', dist:'罗湖', score2026:474, score2025:459, commute2026:459, hasCommute:true, commuteDrop:-15, dataNote:'2025年实录', note:''},
+  {name:'富源学校(招生608人)', tier:'民办', dist:'宝安', score2026:462, score2025:447, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2024年估算', note:''},
+  {name:'承翰学校', tier:'民办', dist:'龙岗', score2026:450, score2025:436, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2024年估算', note:''},
+  {name:'盐田区梅沙双语学校', tier:'民办', dist:'盐田', score2026:446, score2025:432, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2024年估算', note:''},
+  {name:'桃源居中澳实验学校', tier:'民办', dist:'宝安', score2026:446, score2025:432, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2024年估算', note:''},
+  {name:'万科梅沙书院（国际为主）', tier:'民办', dist:'盐田', score2026:437, score2025:423, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2024年估算', note:''},
+  {name:'深圳耀华实验学校', tier:'民办', dist:'福田', score2026:432, score2025:418, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2024年估算', note:''},
+  {name:'深圳华侨（康桥）书院-学费最便宜', tier:'民办', dist:'宝安', score2026:427, score2025:413, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2024年估算', note:''},
+  {name:'福桥高级中学', tier:'民办', dist:'宝安', score2026:421, score2025:408, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2024年估算', note:''},
+  {name:'德琳学校', tier:'民办', dist:'龙岗', score2026:413, score2025:400, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2024年估算', note:''},
+  {name:'深圳南山中加学校（国际为主）', tier:'民办', dist:'南山', score2026:407, score2025:394, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2024年估算', note:''},
+  {name:'建文外国语学校', tier:'民办', dist:'龙岗', score2026:354, score2025:343, commute2026:null, hasCommute:false, commuteDrop:null, dataNote:'2024年估算', note:''},
+];
+
+// 指标生候选（需向班主任确认具体名额）
+const INDEX_CANDIDATES = ["南外高中","科高（深圳科学高中）","南科大附中","北师大附中（深圳）","深大附中","二高","翠园中学（本部）"];
+
+function onScoreInput(val) {
+  const n = parseInt(val);
+  if (!isNaN(n) && n > 400) {
+    document.getElementById('score').style.borderColor = '#34c759';
+  }
+}
+
+function getCheckedValues(groupId) {
+  return Array.from(document.querySelectorAll(`#${groupId} input:checked`)).map(el => el.value);
+}
+
+function getRadioValue(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : '';
+}
+
+function generatePlan() {
+  const scoreRaw = parseInt(document.getElementById('score').value);
+  const schoolName = document.getElementById('school').value.trim();
+  const dormPref = getRadioValue('dorm');
+  const districts = getCheckedValues('districtPref');
+  const personality = getCheckedValues('personality');
+
+  if (!scoreRaw || scoreRaw < 400 || scoreRaw > 630) {
+    alert('请输入有效的预估分数（400-630分）');
+    return;
+  }
+
+  // 显示结果区
+  const resultDiv = document.getElementById('result');
+  resultDiv.classList.add('visible');
+
+  // ── 分数分析 ──
+  document.getElementById('displayScore').textContent = scoreRaw;
+
+  let scoreDesc = '';
+  if (scoreRaw >= 610)      scoreDesc = '🌟 顶尖档：全市前0.5%，深高中心等顶级名校竞争范围';
+  else if (scoreRaw >= 595) scoreDesc = '✨ 卓越档：全市前2-3%，一线名校正式竞争范围';
+  else if (scoreRaw >= 580) scoreDesc = '💪 优质档：全市前5-8%，老牌重点高中主竞争区间';
+  else if (scoreRaw >= 565) scoreDesc = '📈 良好档：全市前10-15%，优质高中稳定竞争区间';
+  else if (scoreRaw >= 545) scoreDesc = '📚 中上档：全市前20-30%，区级优质高中竞争区间';
+  else if (scoreRaw >= 520) scoreDesc = '📗 普通重点档：区级一般重点高中竞争范围，请以《报考手册》为准';
+  else if (scoreRaw >= 480) scoreDesc = '📘 普通高中档：普通高中竞争范围，建议向班主任获取详细指导';
+  else                      scoreDesc = '📙 基础档：当前分数较低，建议重点与班主任沟通，仔细核实《报考手册》';
+  document.getElementById('scoreDesc').textContent = scoreDesc;
+
+  // 指标生分析框
+  const indexAnalysis = document.getElementById('indexAnalysis');
+  indexAnalysis.innerHTML = `
+    <h4>🏷️ 指标生（名额分配）核心策略</h4>
+    <p>以您的预估分 <strong>${scoreRaw}分</strong> 为基准，指标生填报以 <strong>+5分以内</strong> 的学校为宜。</p>
+    <ul>
+      <li>向班主任索取 <strong>《本校指标生历年录取情况表》</strong>，确认名额数和校内最低录取分</li>
+      <li>指标录取后<strong>不再参与统招</strong>，所以要真正愿意去这所学校</li>
+      <li>指标生分数线比统招线通常低1-2分，是难得的降分机会</li>
+      ${schoolName ? `<li>您的初中：<strong>${schoolName}</strong>（请向班主任核实具体分配名额）</li>` : ''}
+    </ul>
+  `;
+
+  // ── 生成志愿方案 ──
+  const wantCommute = dormPref === '走读优先';
+
+  // 按分数降序排列全部学校
+  const allSorted = [...SCHOOLS].sort((a, b) => b.score2026 - a.score2026);
+
+  // ── 自适应分层算法 ──
+  const maxDbScore = allSorted[0]?.score2026 || 600;
+
+  // 第一步：标准偏移量分层
+  let caipiao    = allSorted.filter(s => s.score2026 >= scoreRaw + 15);
+  let superNormal= allSorted.filter(s => s.score2026 >= scoreRaw + 8  && s.score2026 < scoreRaw + 15);
+  let stable     = allSorted.filter(s => s.score2026 >= scoreRaw - 3  && s.score2026 < scoreRaw + 8);
+  let bottom     = allSorted.filter(s => s.score2026 >= scoreRaw - 65 && s.score2026 < scoreRaw - 15);
+  let isBelowRange = false;
+
+  // 第二步：仅对"高分边界"做特殊处理（分数接近数据库顶部，彩票超常为空）
+  const stdTotal = Math.min(1,caipiao.length)+Math.min(4,superNormal.length)
+                 + Math.min(5,stable.length)+Math.min(2,bottom.length);
+
+  if (stdTotal < 8 && scoreRaw >= maxDbScore - 15) {
+    // 高分边界：将全库前几所均匀分配到各档
+    caipiao     = allSorted.slice(0, 1);
+    superNormal = allSorted.slice(1, Math.min(5, allSorted.length));
+    stable      = allSorted.slice(5, Math.min(10, allSorted.length));
+    bottom      = allSorted.slice(10, Math.min(12, allSorted.length));
+  } else if (stdTotal < 5) {
+    // 低分边界：学校库内该分段学校极少，如实展示并标记
+    isBelowRange = true;
+    // 不做人工重排，只扩大兜底区间让底部更多学校显示
+    bottom = allSorted.filter(s => s.score2026 >= scoreRaw - 100 && s.score2026 < scoreRaw - 10);
+  }
+
+  // 指标生候选
+  const indexCandidates = allSorted.filter(s => s.score2026 >= scoreRaw - 5 && s.score2026 <= scoreRaw + 10);
+
+  // 渲染指标生
+  document.getElementById('indexContent').innerHTML = renderIndexCard(indexCandidates, scoreRaw);
+
+  // 渲染12志愿
+  document.getElementById('planContent').innerHTML = renderPlanTable(
+    caipiao.slice(0,1),
+    superNormal.slice(0,4),
+    stable.slice(0,5),
+    bottom.slice(0,2),
+    wantCommute,
+    isBelowRange
+  );
+
+  // 渲染提示
+  document.getElementById('tipsContent').innerHTML = renderTips(scoreRaw, dormPref, personality, schoolName);
+
+  // 滚动到结果
+  setTimeout(() => {
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function renderIndexCard(candidates, score) {
+  if (candidates.length === 0) {
+    return `<p style="color:var(--text-secondary);font-size:14px;">根据当前分数，该分段附近暂无匹配的指标生候选，请向班主任确认本校具体指标名额分配情况。</p>`;
+  }
+  let html = `<p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">以下学校在预估分 ±10分 范围内，可能作为指标生志愿候选（需向班主任核实名额数量）：</p>`;
+  html += `<div class="school-list">`;
+  candidates.slice(0, 5).forEach(s => {
+    const diffSign = s.score2026 > score ? '+' : '';
+    const diff = s.score2026 - score;
+    html += `<div class="school-item">
+      <div class="school-name">${s.name}</div>
+      <div class="school-tags">
+        <span class="tag tag-blue">参考线≈${s.score2026}分 (${diffSign}${diff})</span>
+        <span class="tag tag-green">可能低1-2分录取</span>
+        <span class="tag tag-gray">${s.dist}</span>
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+  html += `<p style="font-size:12px;color:var(--red);margin-top:12px;">⚠️ 指标生不要当"保底"——指标录取后直接结束，不参与统招，确认真心愿意去再填！</p>`;
+  return html;
+}
+
+function renderPlanTable(caipiao, superArr, stableArr, bottomArr, wantCommute, isBelowRange) {
+  const rows = [];
+  let pos = 1;
+
+  const addRows = (schools, tier, tierClass, tierEmoji) => {
+    schools.forEach(s => {
+      rows.push({ pos: pos++, tier, tierClass, tierEmoji, school: s, commute: wantCommute });
+    });
+  };
+
+  addRows(caipiao,  '🎰 彩票冲刺', 'caipiao', '🎰');
+  addRows(superArr, '🚀 超常发挥', 'super',   '🚀');
+  addRows(stableArr,'🎯 稳定目标', 'stable',  '🎯');
+  addRows(bottomArr,'🛡️ 兜底保底', 'bottom',  '🛡️');
+
+  const total = rows.length;
+
+  // 低分段特别提示
+  const belowRangeAlert = isBelowRange ? `
+    <div style="background:#fff8ec;border:1.5px solid #ffcc00;border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:14px;font-size:13px;color:#7d4700;">
+      ⚠️ <strong>该分数段可报普通公办高中极少</strong>，本工具数据库中匹配学校数量有限，下方仅展示数据库中分数最接近的学校供参考。<br>
+      建议：① 重点查阅《报考指导手册》中全部普通高中录取分数；② 了解民办高中/综合高中选项；③ 务必与班主任沟通，获取专业指导。
+    </div>` : '';
+
+  let html = belowRangeAlert + `
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">
+      下方为基于参考数据自动生成的方案，共 <strong>${total}</strong> 个志愿
+      ${total < 12 ? `（<span style="color:var(--orange)">建议补满12个，可结合《报考指导手册》补充</span>）` : '（已接近12个，建议逐一核实分数线）'}
+    </p>
+    <div style="overflow-x:auto;">
+    <table class="vol-table">
+      <thead>
+        <tr>
+          <th style="width:48px">位置</th>
+          <th style="width:120px">层次</th>
+          <th>学校</th>
+          <th style="width:90px">参考线</th>
+          <th style="width:80px">走读调剂</th>
+          <th>备注</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  rows.forEach(r => {
+    const s = r.school;
+    // 走读调剂列：有走读且家长偏好走读才建议勾选
+    const commuteTag = (s.hasCommute && r.commute)
+      ? `<span class="tag tag-orange">建议勾选</span>${s.commuteDrop ? `<br><span style="font-size:11px;color:var(--text-secondary)">降分约${Math.abs(s.commuteDrop)}分</span>` : ''}`
+      : (s.hasCommute ? '<span class="tag tag-gray">可勾选</span>' : '<span class="tag tag-gray" style="opacity:.5">无走读</span>');
+
+    // 动态生成标签
+    const tags = [];
+    if (s.tier === 'A+') tags.push({cls:'tag-purple', t:'顶尖A+'});
+    else if (s.tier === 'A') tags.push({cls:'tag-blue', t:'重点A'});
+    else if (s.tier === 'B+') tags.push({cls:'tag-green', t:'优质B+'});
+    else if (s.tier === 'B') tags.push({cls:'tag-orange', t:'普通B'});
+    else tags.push({cls:'tag-gray', t:'民办/其他'});
+    if (s.dataNote !== '2025年实录') tags.push({cls:'tag-orange', t:'⚠️估算'});
+    if (s.dist) tags.push({cls:'tag-gray', t:s.dist});
+
+    const tagsHtml = tags.map(t=>`<span class="tag ${t.cls}" style="margin-right:3px">${t.t}</span>`).join('');
+
+    // 2026参考分（同时显示2025对照）
+    const scoreCell = `<span style="font-weight:600">≈${s.score2026}分</span><br>
+      <span style="font-size:11px;color:var(--text-secondary)">(2025年:${s.score2025}分)</span>`;
+
+    html += `<tr>
+      <td><strong>${r.pos}</strong></td>
+      <td><span class="tier-dot dot-${r.tierClass}"></span>${r.tierEmoji} ${r.tier.replace(/^.{2}/,'')}</td>
+      <td>
+        <div style="font-weight:600;margin-bottom:3px">${s.name}</div>
+        ${tagsHtml}
+      </td>
+      <td>${scoreCell}</td>
+      <td>${commuteTag}</td>
+      <td style="font-size:12px;color:var(--text-secondary)">${s.note || '—'}</td>
+    </tr>`;
+  });
+
+  if (total < 12) {
+    for (let i = total + 1; i <= 12; i++) {
+      html += `<tr style="opacity:.4">
+        <td><strong>${i}</strong></td>
+        <td colspan="5" style="color:var(--text-secondary);font-size:13px">⬜ 待补充 — 查阅《报考指导手册》后手动添加</td>
+      </tr>`;
+    }
+  }
+
+  html += `</tbody></table></div>`;
+
+  html += `<div style="margin-top:14px;padding:12px 14px;background:#f0fdf4;border-radius:var(--radius-sm);font-size:13px;color:#065f46;">
+    💡 <strong>兜底选校规则：</strong>用稳定档第一所学校的2025年住宿录取分为基准，找低约20分的学校作为兜底1，低约50分的学校作为兜底2。
+    请在《报考指导手册》中核实最新数据。
+  </div>`;
+
+  return html;
+}
+
+function renderTips(score, dorm, personality, school) {
+  const tips = [];
+
+  // 通用红线
+  tips.push({ level: 'red', icon: '🚫', text: '<strong>录取后不退档、不转校</strong>——一旦被录取即为最终结果，12个志愿务必在截止前仔细核对' });
+  tips.push({ level: 'red', icon: '🔒', text: '<strong>走读调剂一旦勾选不可转住宿</strong>——如对住宿有需求，谨慎勾选走读调剂选项' });
+
+  // 指标生警告
+  tips.push({ level: 'orange', icon: '🏷️', text: '<strong>指标生≠保底志愿</strong>：指标录取成功后直接结束志愿，不再参与统招，填报前确认真正愿意去' });
+
+  // 分数相关
+  if (score >= 590) {
+    tips.push({ level: 'blue', icon: '📊', text: `您的分数处于顶尖/优质档，<strong>稳定目标层要精心布局</strong>——高分段每1分都有大量竞争者，不要高估` });
+  }
+  if (score < 560) {
+    tips.push({ level: 'orange', icon: '🛡️', text: `<strong>兜底志愿最重要</strong>——选出两所真正愿意去的学校放在第11、12位，确保不滑档` });
+  }
+
+  // 住宿提示
+  if (dorm === '住宿优先') {
+    tips.push({ level: 'green', icon: '🛏️', text: '住宿优先建议关注：<strong>红岭中学、育才中学</strong>住宿条件口碑好；深高东校区住宿名额有限，注意查询' });
+  }
+  if (dorm === '走读优先') {
+    tips.push({ level: 'blue', icon: '🚶', text: '<strong>深高东校区2026年走读名额约70人</strong>，比中心校区降分约10分，是深高北考生的走读性价比选项' });
+  }
+
+  // 性格提示
+  if (personality.includes('理科强') || personality.includes('自律强')) {
+    tips.push({ level: 'blue', icon: '🔬', text: '<strong>科高（深圳科学高中）</strong>适合自律强的理科生，但管理高压类似衡水，请与孩子充分沟通是否能接受' });
+  }
+  if (personality.includes('文科强')) {
+    tips.push({ level: 'blue', icon: '📖', text: '<strong>南外高中</strong>文科培养比高级中学更强，适合语言敏感、有出国意向或文科志向的学生' });
+  }
+
+  // 2026特别提醒
+  tips.push({ level: 'orange', icon: '📅', text: '<strong>2026年满分从610分调整为630分</strong>，历年分数线须换算后再对比，不要直接拿2025年的数字套用' });
+  tips.push({ level: 'green', icon: '📋', text: '<strong>务必向班主任索取</strong>《本校指标生历年录取情况表》，核实本校→目标学校的名额数量和去年最低录取分' });
+
+  return `<div class="tips-list">${tips.map(t => `
+    <div class="tip-item ${t.level}">
+      <div class="tip-icon">${t.icon}</div>
+      <p>${t.text}</p>
+    </div>`).join('')}
+  </div>`;
+}
+</script>
+</body>
+</html>
